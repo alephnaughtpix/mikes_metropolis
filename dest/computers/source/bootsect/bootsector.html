@@ -1,0 +1,394 @@
+
+<html>
+<head>
+<title>Atari Bootsector Coding</title>
+
+</head>
+<body alink="#00FFFF" bgcolor="#FFFFFF" link="#800000" text="#000000" vlink="#800080">
+<h1><font color="#000080">Atari Bootsector Coding</font></h1>
+<ul>
+<li>Bootsectors, the 512 byte marvel of the st world!!!!!! </li>
+<li>The number one sector on your floppies!!!! </li>
+<li>Let the power of the bootsector work for <i>you</i>!!!! </li>
+<li>Errr.... doing things!!! </li>
+<li>A thorough in-depth investigation by <b>Agrajag</b>. </li>
+<li>Including <i>exclusive</i> secrets on how to do an antivirus bootsector!!!</li>
+</ul>
+<p><i>This article originally appeared in <b>Ledgers disk magazine issue
+11, </b>August 1992.</i></p>
+<p>
+</p><hr/><p></p>
+<p>Are you one of those people who blunder through life with clean bootsectors
+on your disks? Well, then I'd say you're bloody lucky not get a virus on
+them. What's your secret? </p>
+<p>No, you're more likely to put some nice looking antivirus bootsector
+on it, like the 'English' antivirus or the 4 meg incompatible Medway Boys
+Virus protector 3. But have you ever stopped to think <i>'Wow! I wonder
+how that's all done in such a small 512 byte space?'</i> Stop looking at
+the screen like that, of course you have. Well, that's what this article
+is all about. </p>
+<p>
+</p><hr/><p></p>
+<p>First the really boring theory bit. Did you know that not all of the
+bootsector can be used for your coding experiments? I'm afraid it's true.
+Some of the meagre 512 bytes is used by the system in order to determine
+the format of the disk. Yes, I know it's annoying. Why the system can't
+work out how to read the disk by itself without needing to read a couple
+of bytes which could be used for some hyper-optimised code I don't know.
+Still, that's the way it is. So let's look at the bits you <i>have</i>
+to put in the bootsector. </p>
+<dl>
+<dt><b>Byte No.</b> </dt>
+<dd>Function </dd>
+<dt><b>00 - 01</b> </dt>
+<dd>bra.s command. Usually bra.s + $38. Jumps to bootcode. If the boot's
+not executable, then it's just a word value of 0 </dd>
+<dt><b>02 - 07</b> </dt>
+<dd>'Loader' - has absolutely no function other than that of ego trip,
+since you have 6 chars space to put your initials in!! In a 'Clean' disk,
+it's 'IBM V' (As in MS-DOS) </dd>
+<dt><b>08 - 10</b> </dt>
+<dd>24 bit disk serial number. Not really very useful! </dd>
+<dt><b>11 - 12</b> </dt>
+<dd>Bytes per sector. Like wow, you could have <i>1024 byte sector disks!</i>
+(Except that GEM won't like it very much.) </dd>
+<dt><b>13</b> </dt>
+<dd>Sectors per cluster. Clusters are blocks used by the DOS to store files.
+The default in Atari GEMDOS (And old MSDOS on DD disks) is 2, which is
+1K (2 * 512 byte sectors.) </dd>
+<dt><b>14 - 15</b> </dt>
+<dd>No. of reserved sectors. In other words, just the bootsector ie 1 on
+any disk. </dd>
+<dt><b>16</b> </dt>
+<dd>No. of file allocation tables. That's where DOS looks when it wants
+to work out where a file starts and ends on a disk. </dd>
+<dt><b>17 - 18</b> </dt>
+<dd>Max no of directory entries. Guess what that's for! </dd>
+<dt><b>19 - 20</b> </dt>
+<dd>The TOTAL number of sectors on a disk. For example an 81 track 10 sector
+double sided disk has ermmmm, where's my calculator? ... Hang on... 81
+times 10 is 810, times 2 is,.... yes, 1620 sectors, I think. </dd>
+<dt><b>21</b> </dt>
+<dd>This apparently is the 'Media Descriptor Byte', which is not used by
+the ST, but is used by MS-DOS. Wow! (So if you want your ST programs readable
+on PCs for some odd reason, then don't leave this byte out!) </dd>
+<dt><b>22 - 23</b> </dt>
+<dd>The number of sectors per file allocation table. I don't need to tell
+you how exciting that is. </dd>
+<dt><b>24 - 25</b> </dt>
+<dd>Number of sectors per track. Usually 9 or 10 or even (if you are really
+naughty!!!) 11! Of course if you have a high density drive (eg in a Falcon
+030), it can be anything up to 21 sectors. </dd>
+<dt><b>26 - 27</b> </dt>
+<dd>Number of sides. Now I don't need to tell you which number I think
+SHOULD be default. Clue: single sided drives went out with half meg STFMs.
+</dd>
+<dt><b>28 - 29</b> </dt>
+<dd>Number of hidden sectors! I don't think this is ever used, but if you
+want to be the first.... </dd>
+<dt><b>30 -</b> </dt>
+<dd>After all that, <b>then</b> your boot code starts! </dd>
+<dt><b>510 - 511</b> </dt>
+<dd>Checksum number. Add this to a word checksum of the rest of the bootsector,
+and if it comes to <b>$1234</b> (ie 1234 in hexidecimal notation), then
+the bootsector is executable, and the code from byte 30 onwards will be
+executed when the bootsector is loaded. </dd>
+</dl>
+<p>Some of you might have noticed that there's no mention of the number
+of actual tracks in a disk. This, believe it or not, is one of the few
+things the computer can work out by itself, by dividing the total number
+of sectors by the number of sectors per track. </p>
+<p>It's also worth mentioning that the code in the bootsector is executed
+in supervisor mode. It's <b>has</b> to be pc-relative and <b>has</b> to
+end with an <b>rts</b>. </p>
+<p>Another thing you might have noticed is that your code can start at
+byte 30. Now 30 is $1e in hex, but most documented executable boot code
+for some odd reason starts at byte $38 or byte 56! So there's a lot of
+space there that could be used. In fact, <i>Fastcopy</i> stamps it's name
+in the area $1e-$38 when it formats a disk. Which is how I know T.V.I.
+used Fastcopy to format the disks for their <i>'The Year After'</i> megademo!
+</p>
+<p>
+</p><hr/><p></p>
+<p>So what use can all that nonsense possibly be? </p>
+<p>Firstly, when you're formatting disks, you've got to get the structure
+of the bootsector right, or the disk will behave strangely, or not at all.
+</p>
+<p>Secondly, you might want to put your own custom 'antivirus' bootsector
+on all your disks, and annoy your friends and contacts no end! If you want
+to be really annoying, why not write a virus as well- That'll really piss
+them off! (I am not being serious of course.) </p>
+<p>Thirdly, you might want to write a demo... Ahhhh, well, I'm not telling
+you too much about that yet. </p>
+<p>All you really need to know is the magic 4 steps to installing a bootsector.
+</p>
+<ol>
+<li>Read the bootsector into memory. </li>
+<li>Do what ever you want to do with it. </li>
+<li>Make sure you've got the right checksum on it. </li>
+<li>Write it back out to disk. </li>
+</ol>
+<p>In this (nice long) article, I'm concentrating on putting some good
+old assembler mnemonics into the bootsector, from a simple virus-free message
+to a more complex antivirus warning system. </p>
+<p>You might already have got source which installed 68000 code on a bootsector.
+If you haven't, then there should be a pretty simple example in ' <a href="boot.s">BOOT.S</a>
+' which does the above four steps. Let's look at them in a bit more detail.
+</p>
+<ol>
+<li>How could possibly read the bootsector into memory?? What's that I
+hear? <i>trap #13</i> rwabs or <i>trap #14</i> floprd call? Yes, that sounds
+a good idea. Quick delve into <i>ST Internals</i>. Yes, that's a good idea.
+</li>
+<li>So we've got our original bootsector in a 512 byte buffer. First we
+need to put our <b>bra.s + $1e</b> right at the start of the buffer. To
+do this, just put the word value <b>$601e</b> at the start of the buffer.
+Then we need to copy our bootcode into the buffer starting $1e bytes after
+that. You might also want to change the 'loader' and serial number as well!
+</li>
+<li>For an executable bootsector to be executable, then sum of all the
+word values must equal <b>$1234!</b> You can do this with the <i>trap #14</i>
+proboot call, though you can do it yourself by simply adding up all the
+word values in the bootsector buffer until byte 510, subtracting the result
+from $1234, and putting the (word) result in bytes 511-512. </li>
+<li>How could you possibly write a 512 byte buffer to disk. Yes, surprise,
+it's that good old <i>trap #13</i> rwabs again, or a <i>trap #14</i> flopwr
+call. And that's all there is. </li>
+</ol>
+<p>So having convinced you of how stunningly easy it is to put any old
+crap on your bootsector, let's make an antivirus bootsector! </p>
+<p>
+</p><hr/><p></p>
+<p>Generally, an antivirus is a bootsector which is there to stop any antiviruses
+edging in on it. Some more complex ones may help to detect viruses eg flash
+whenever a disk has an executable bootsector. However, they do NOT spread,
+so I would suspect that stuff like the <i>English/Dutch/German 'antivirus'</i>
+is really a virus which merely spreads under the pretence that it does
+not do any nasty virus type things like reverse mouse controls, wipe disks,
+etc., etc., .... </p>
+<p>The simplest type of antivirus bootsector is the sort that just says
+that it's there, so if any virus overwrites it, then you'll notice. This
+is usually simple stuff like flashing colours and a text message. There
+are 2 examples of this in my source code, one in ' <a href="boot.s">BOOT.S</a>
+' and the other in ' <a href="phnx_bt.s">PHNX_BT.S</a> '. I've also done
+an installer program for '<a href="phnx_bt.s">PHNX_BT.S</a> ', which allows
+you to type in any message you want to display with the bootsector! Look
+in '<a href="installp.s">INSTALLP.S</a>'. </p>
+<p>I might as well note here that there have been some stunning examples
+of this bootsector. For example, the <i>OVR full-o-boot, Fingerbobs sprites,
+Oberjee's rasters, Oberjee's starfield, DCK boot</i>. All of them done
+in less than 512 bytes! </p>
+<p>The bootsector in '<a href="phnx_bt.s">PHNX_BT.S</a>' also checks to
+see in the reset vector has been changed, a possible pointer to a reset-proof
+virus. However, it is probably a bit more likely that any virus will be
+<i>reset-resident</i>, (eg <i>Ghost</i> virus) which uses a different technique
+entirely. </p>
+<p>Without giving the whole game away to all you budding virus coders,
+reset- resident code depends arranging code at a specific area in memory,
+and, like bootsectors, doing a checksum of this block of code to make sure
+it comes to a certain number. (But it's not $1234!) At the start of the
+block of code, there's a "magic number". Basically, all you have
+to do is look for this number. The first leaders in this sort of antivirus
+were the <i>Medway Boys Protectors</i>. (Although <i>Protector v3.0</i>
+isn't 4 meg compatible.) Of course, my own Agraboot 2 is compatible and
+can check for reset-resident code! </p>
+<p>Slightly more complex are the sort of bootsetors which use techniques
+used by virus writers to warn of potential viruses BEFORE you try and boot
+them up! (This is what this masterwork of an article is leading to, by
+the way!) You know the sort. If a disk with an executable is placed in
+the drive, as soon as it's accessed, the screen flashes, and there might
+even be some sort of beep or horrible chip-noise. Examples of this are
+<i>Exorcist Boot</i>, and of course the <i>English/Dutch/German 'antivirus'</i>.
+(Except that it also spreads like a virus.) </p>
+<p>Actually, while we're at it, I must protest as the way that such bootsectors
+readily flash at every executable bootsector! </p>
+<p>Why? </p>
+<p>Nearly every PD or shareware disk these days has an antivirus bootsector,
+and of course all games and demos which use DMA loading have executable
+bootsectors. Which means that whatever disk you put in these days, your
+'smart' antivirus will flash at them, whether they are disk threatening
+viruses or harmless <i>'Grythyx says hi to Bubblelob and Zoltar the aroused
+radio set.'</i> type messages. [Don't ask] It's also incredibly easy to
+say <i>'Yeah, the screen's flashing but it's alright, it's only because
+I put an antivirus on that disk last week.'</i>, when, during the last
+week, a virus could have installed itself on that disk! As yet, there is
+no antivirus bootsector I have seen that can tell the difference between
+a virus and an ordinary executable bootsector. Until now, that is! For
+this is exactly what I'm going to do. </p>
+<p>In what way can this be acheived? To do this, we need to look at the
+way a virus on the ST would operate. Don't worry- I'm not giving any exact
+details, so all you budding virus writers are going to be disappointed
+Anyway, you'd have to be pretty clever to outwit most decent virus killer
+programs these days. I have included code for the <i>English 'Antivirus'</i>
+for reference in '<a href="anti.s">ANTI.S</a>' </p>
+<p>
+</p><hr/><p></p>
+<p>When you think on it, a virus spreads in a pretty similar way to the
+magic 4 steps described above. All we need is a way of calling this routine
+every time a new disk is inserted, and a safe place in which to reside
+in memory. </p>
+<p>One safe bit in memory would be in the area <b>$140-$3ff</b>. Certainly
+the <i>Ghost</i> virus resides in this area. However the <i>English 'Antivirus'</i>
+takes an address from the memory location <b>$4c6</b>, adds $600 to it,
+and treats this as a safe place to put it's routines!!!! It works, but
+it seems strange to say the least. </p>
+<p>Leafing through <i>ST Internals</i>, <b>$4c6</b> is reffered to as a
+'pointer to a 1024 byte disk buffer' which is 'used for GSX routines'!!!!
+<i>GSX?!??!?</i> And isn't $600 one and a half kilobytes?? That's 3 normal
+sectors worth, you know! Well, after looking closer at a couple of virus
+codes, it became obvious to me that it was nothing to do with GSX, but
+a buffer containing the bootsector and 2 other sectors, (FATs?) which is
+set every time a normal disk directory is read, by... who?... what?...
+where?.... what routine? Aha! We have found both a way of reading the bootsector,
+and a possible way of calling our routines! </p>
+<p>The vector which fills out all this information is <b>get_bpb</b> vector
+in <b>$472</b>. When this is called by the system, it pushes the drive
+number as a word value onto the stack, then jumps to the vector. </p>
+<p>Note- the way the <i>English 'Antivirus'</i> finds a safe place in memory
+is a bit dodgy to be honest, as it assumes only $600 bytes are used, when
+in fact it could be more (eg if there's a bigger directory, and more FATs
+are read.)It's also pretty dodgy if you've got a hard drive, which uses
+a lot of FATs! For these reasons, the <i>'antivirus'</i> can crash very
+badly on other Atari systems, but- get this- the <i>Ghost</i> virus still
+works! </p>
+<p>Now we've got all the information we need to piece together our antivirus.
+Don't believe me? Let's go through the various steps of an antivirus and
+it's constituent parts one by one. First the installation of the routine.
+</p>
+<ol>
+<li>When your ST executes the bootcode, first find some place in memory.
+</li>
+<li>Copy your bootsector code to that area, and jump to the next instruction
+there. </li>
+<li>Save the current <b>get_bpb</b> vector, and slot in your virus detect
+code into that vector. </li>
+<li>Return to system. </li>
+</ol>
+<p>And now your virus detect code. </p>
+<ol>
+<li><b>jsr</b> through the old <b>get_bpb</b> vector (to get the bootsector).
+</li>
+<li>Examine the bootsector. </li>
+<li>If it's executable, then flash the screen. </li>
+<li>If it's a potential virus, then really flash it! </li>
+<li>Return to system. </li>
+</ol>
+<p>Finding the safe place in memory we've already covered. Copying the
+virus to that place BEFORE installing the routine in the <b>get_bpb</b>
+vector is vital because the bootsector uses pc-relative code, so installing
+your routine would mean that the <b>get_bpb</b> would point to some high
+point in ST memory rather than the safe place you actually intended for
+it! It makes sense when you think about it. Copying bits of code to other
+places is pretty simple stuff for the average ST assembler coder. So is
+saving the old <b>get_bpb</b> vector and installing your own virus detect
+routines. Remember that saving the old <b>get_bpb</b> is VITAL! </p>
+<p>Once you've done that, you can display a nice message, informing the
+user how helpful your nice antivirus is. You might notice that my antivirus
+flashes the screen in a similar way to <i>Future Minds Boul Boot</i>. I
+bet you'll kick yourself when you see how I did it! </p>
+<p>Now down to the nitty gritty of the virus detect code. While the likes
+of the <i>Ghost</i> virus isn't too fussy about what's in the bootsector
+(Because it's gonna write over it anyway), an antivirus needs to have a
+look at the bootsector, so the first thing to do is <b>jsr</b> through
+the old <b>get_bpb</b> vector to get the bootsector. The slight complication
+in all of this is that we have to get the drive number and push it as a
+word value on the stack before the <b>jsr</b>. That value will have already
+been given by the system before it turned up in your <b>get_bpb</b> code!!
+So it'll be on the stack, behind the return address. All you have to do
+is get it. </p>
+<p>In the <i>English 'Antivirus'</i> this is done by using the <b>link</b>
+command. (Which I had never used in coding before.) <i>'link an,#n'</i>
+apparently means link address register an to the stack at the current moment
+with an offset of n. So, in the <i>'antivirus'</i> code we have 'link a6,#0'
+which means that a6 is now pointing to where the stack is at that particular
+point, and no matter how much you fiddle about with the stack, a6 will
+stay where it is. I personally think now that this is not exactly the best
+way of doing it, especially since drive number is now in 8(a6) rather than
+4(a6) as you might expect. Still, that's how I did it in <i>Agraboot v1.0</i>,
+so you know what to improve. Anyway, however you get the number, push it
+on the stack, <b>jsr</b> through the old <b>get_bpb</b> vector, then correct
+the stack. </p>
+<p>Now we've got the bootsector in the buffer pointed to by $4c6, how do
+we determine if it's executable or not? What's that I hear you say? Oh
+yes! If the checksum comes to $1234, then the bootsector is executable!
+So we add up all the word values in the buffer, and if it comes to $1234,
+then we flash the screen! Of course, we'll put some code to check that
+it's not our own antivirus but that's pretty easy. Hurrah hurrah! We've
+now got an antivirus that is the equal of any on the scene! </p>
+<p>
+</p><hr/><p></p>
+<p>But of course, we can go further. My <i>Agraboot v1.0</i> antivirus
+flashes the screen at an executable bootsector, but flashes <i>red</i>
+at a probable virus!!! As far as I can tell, this is the only antivirus
+bootsector which has this feature. But since I am of the opinion that this
+sort of feature should be a bit more widespread, then I'll share the secret
+with you lucky readers!!! </p>
+<p>Actually, there's nothing much to it. When you think on it, what is
+common to every virus? What have all viruses got to do to be viruses? Yes,
+they've got to spread!! So we look for the part which saves a virus onto
+the bootsector. Well, that's easy-peasy, we look for a <i>trap #13</i>
+rwabs call or a <i>trap #14</i> flopwr call. </p>
+<p>Let's look at the offending calls in hexidecimal. </p>
+<table border="1">
+<tbody><tr>
+<td align="CENTER"><b><font color="#000080">INSTRUCTION</font></b></td>
+<td><b><font color="#000080">HEX CODE</font></b></td>
+</tr>
+<tr>
+<td>
+<pre>move.w  #4,-(sp)
+trap    #13</pre>
+</td>
+<td>
+<pre>$3f3c0004
+$4e4d</pre>
+</td>
+</tr>
+<tr>
+<td>
+<pre>move.w  #9,-(sp)
+trap    #14</pre>
+</td>
+<td>
+<pre>$3f3c0009
+$4e4e</pre>
+</td>
+</tr>
+</tbody></table>
+<p>As you can see, the offending instructions begin with a <b>$3f3c</b>,
+so if we find one in the virus bootsector, then we can check further for
+the rest of the incriminating bytes. If so, we can flash 'red for suspicious'.
+This is not exactly foolproof, but it can detect most viruses. </p>
+<p>If you want to see how I did then you can load up ' <a href="agraboot.s">AGRABOOT.S</a>
+'. It's old code now, and I've improved it, but it's quite nice. There's
+also an installer program for it in ' <a href="installa.s">INSTALLA.S</a>'.
+</p>
+<p>
+</p><hr/><p></p>
+<p>I did sneakily mention the part that bootsectors play in demos above.
+I'll not give too much away, since I'm actually helping to put one together
+at the moment, but let's say you have your DMA loader working, but you
+can't fit it on a 512 byte bootsector. (Which I think is probable, don't
+you?) How do you load the DMA loader into memory and start the demo proper?
+If you haven't guessed by now then there's no hope. Use <i>trap #13</i>
+to sector load the DMA loader. Then you can jump to it. The advantage here
+is that there's lots of space to allow you to put in some really annoying
+protection into your demo!!! </p>
+<p>You can even use a bootsector, even if you are not using a DMA loader!
+Yes! You can put something like a simple screen fade into the bootsector
+before the AUTO program loads, making it look like a <i>real</i> demo!!!
+</p>
+<p>
+</p><hr/><p></p>
+<p>So, that's just a glimpse (Oh dear, what a cliche.) at the amazing power
+of the bootsector. If you wan't to know more, don't ask me, as I am just
+about to fall asleep because it is now nearly 2:30 am, and I, like most
+human beings, try to get to sleep at around this time, instead of typing
+stuff which should have been in ST Internals anyway. Think about that the
+next time you boot up a disk. </p>
+<p><font color="#000080"><b>Agrajag.</b> </font></p>
+<p>
+</p><hr/><p></p>
+<p><a href="/web/19970121061825/http://grelb.src.gla.ac.uk:8000/~mjames/computers/source/atari_source.html">Back?</a> </p>
+</body>
+</html>
