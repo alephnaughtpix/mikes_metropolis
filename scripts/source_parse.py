@@ -8,6 +8,8 @@ SOURCE_DIR = '../source/'
 DEST_DIR = '../dest/'
 EXTERNAL_FILES = {}
 file_match = r'\/web\/\w+\/http:\/\/grelb\.src\.gla\.ac\.uk:8000\/~mjames\/'
+url_match = r'https\:\/\/web\.archive\.org\/web\/\w+\/http\:\/\/grelb\.src\.gla\.ac\.uk\:8000\/\~mjames'
+email_match = r'https\:\/\/web.archive.org\/web/\w+\/mailto\:'
 
 def add_external_file(element, data, original_url):
     
@@ -88,11 +90,24 @@ def remove_wayback(body):
     # ALTER LOCAL LINKS
     all_links = body.find_all('a')
     for link in all_links:
+        link_href = ''
         if link.has_attr('data-savepage-href'):             # The original local link is stored in this attribute
             link_href = link['data-savepage-href']
             if not link_href.startswith('http'):
-                link['href'] = link_href                    # Replace the href with the original local link
+                if link_href.startswith('/web/'):
+                    link_href = '{{ "' + re.sub(file_match, '', link_href) + '" | relative_url }}'
                 del link['data-savepage-href']              # Remove the data-savepage-href attribute
+        else:
+            if link.has_attr('href'):
+                link_href = link['href']
+        if re.match(url_match, link_href):
+            link_href = '{{ "/' + re.sub(url_match, '', link_href) + '" | relative_url }}'
+        elif link_href.startswith('/web/'):
+            link_href = 'https://web.archive.org' + link_href
+        elif re.match(email_match, link_href):
+            link_href = re.sub(email_match, 'mailto:', link_href)
+            print("LINK HREF:", link_href)
+        link['href'] = link_href                            # Replace the href with the rejigged link
                  
     return body
 
