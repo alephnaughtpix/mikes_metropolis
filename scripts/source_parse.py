@@ -20,7 +20,7 @@ def add_external_file(element, data, original_url):
         if not os.path.exists(file_path):
             os.makedirs(file_path)
         full_file_path = os.path.join(DEST_DIR, file_name)
-        full_url = '/' + file_name
+        full_url = '{{ "/' + file_name + '" | relative_url }}'
         try:
             img = data_url.DataURL.from_url(data)
             with open(full_file_path, 'wb') as f:
@@ -29,7 +29,7 @@ def add_external_file(element, data, original_url):
             print('ERROR:', e)
     else:
         full_file_path = EXTERNAL_FILES[original_url]
-        full_url = '"{{ "/' + full_file_path + '" | relative_url }}"'
+        full_url = '{{ "/' + full_file_path + '" | relative_url }}'
     if element.name == 'img':
         element['src'] = full_url
         del element['data-savepage-src']
@@ -129,14 +129,13 @@ def process_file(file_source_dir, file_dest_dir, file):
             if not os.path.exists(file_dest_dir):
                 os.makedirs(file_dest_dir)
             with open(dest_file_path, 'w') as f:
-                output_file= f'''
+                output_file= f'''---
+---
 <html>
 <head>
 <title>{title}</title>
-{all_meta_tags}
-</head>
-{body}
-</html>
+{all_meta_tags}</head>
+{body}</html>
 '''
                 f.write(output_file)
 
