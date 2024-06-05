@@ -3,12 +3,47 @@
 <html>
 <head>
 <title>Computer Scene Index</title>
+<meta name="GENERATOR" content="Mozilla/3.0Gold (Win95; I) [Netscape]">
+<meta name="Author" content="Michael James">
+<meta name="Description" content="Information on computer demos, Links to demo crews, and demos to download on your own platform.">
+<script language="Javascript">
+    <!-- Start of script
+      function start_scroller()
+      {
+        if (navigator.appName!="Microsoft Internet Explorer")
+          document.write('<P>\n<FORM name="scroller">\n<TEXTAREA rows=1 cols=30 NOSCROLL name="scrtxt"></TEXTAREA>\n</FORM>\n');
+      }
+      function do_scroller()
+      {
+        if (navigator.appName!="Microsoft Internet Explorer")
+        {
+          scrolltext=" Welcome to the Home Computer Scene...    Information on computer demos on all formats, links to demos to download for your own computer, ";
+          scrolltext+=" and links to other demo crews across the world....    This scroller was done in Javascript by Michael James- soon to be replaced by a proper Java scroller!!!           "
+          scrolltext+="If you can read this, then you aren't running Microsoft Internet Explorer 3.0, because I can't get this code to work on it!!!! There appears to be some problem with variables in their version "
+          scrolltext+="of Javascript....             If I get a Java scroller going, MSIE3.0 reader won't be able to read that either, until MSIE starts supporting Java proper!      ";
+          scroll_pos=0;
+          scroller="";
+          for (i=1; i<=30; i++)
+          {
+            scroller+=" ";
+          }
+          draw_scroller();
+        }
+      }
+    
+      function draw_scroller()
+      { 
+        scroll_pos++;
+        if ( scroll_pos >= scrolltext.length)
+          scroll_pos=0;
+        scroller=scroller.substring(1,30)+scrolltext.substring(scroll_pos,scroll_pos+1);
+        document.scroller.scrtxt.value=scroller;
+        setTimeout("draw_scroller(scrolltext,scroll_pos,scroller);",100);
+      }
+    // End of script -->
+    </script>
 </head>
-<body alink="#00FFFF" bgcolor="#FFFFFF" link="#550000" text="#000000" vlink="#800080">
-
-
-
-
+<body alink="#00FFFF" background='{{ "/backgrounds/chalk.gif" | relative_url }}' bgcolor="#FFFFFF" link="#550000" onload="do_scroller();" text="#000000" vlink="#800080" onLoad=""do_scroller();">
 <center><p><b><font size="+1">welcome to the...<br/>
 <img align="CENTER" alt="= C O M P U T E R * D E M O * S C E N E =" height="171" hspace="12" src='{{ "/computers/scene.gif" | relative_url }}' width="206"/></font></b>
 <br clear="left"/>
@@ -25,15 +60,19 @@
 </td>
 <td align="center"><a href='{{ "senior/default.html" | relative_url }}'><img alt="" border="0" height="107" src='{{ "/senior/sd_small.gif" | relative_url }}' width="80"/></a>
 </td>
-<td align="center"><a href="htc/default.html"><img alt="" border="0" height="80" src='{{ "/computers/htc/htc_small.gif" | relative_url }}' width="214"/></a>
+<td align="center"><a href="../htc/default.html"><img alt="" border="0" height="80" src='{{ "/computers/htc/htc_small.gif" | relative_url }}' width="214"/></a>
 </td>
 </tr>
 <tr>
 <td align="center" colspan="3"><b>[ <a href='{{ "pb/default.html" | relative_url }}'>PB Diskmag</a>
-| <a href='{{ "senior/default.html" | relative_url }}'>Senior Dads</a> | <a href="htc/default.html">How
+| <a href='{{ "senior/default.html" | relative_url }}'>Senior Dads</a> | <a href="../htc/default.html">How
 To Code Diskmag</a> ] </b></td>
 </tr>
-</tbody></table></center>
+</tbody></table><br/>
+<form name="scroller">
+    <textarea rows="1" cols="30" noscroll="" name="scrtxt" style="width: 287px; height: 25px;"></textarea>
+    </form>
+</center>
 <p><i><b>Warning- </b>One or two of the things in the demos/diskmags may
 contain the odd bit of strong language. However, apart from that my general
 <a href='{{ "general/disclaimer.html" | relative_url }}'>disclaimer</a> still stands.</i></p>
@@ -54,7 +93,7 @@ computer scene. </b></li>
 </font></li>
 <ul src="../icons/balls/greenball.gif">
 <li><b><a href="demos/default.html">Demos</a> </b></li>
-<li><b>Disk magazines </b></li>
+<li><b><a href="diskmags.html">Disk magazines</a> </b></li>
 <li><b><a href="source/atari_source.html">Source code</a> </b></li>
 </ul>
 <li><font size="+2"><a href="crews/default.html">Scene people</a>.</font>
