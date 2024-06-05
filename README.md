@@ -16,5 +16,3 @@ I started this project after I discovered that my old website had been [archived
 * I then wrote a Python script to clean out the Wayback Machine code, fix the links for the local pages, and extract the images from the data URIs. You can see the script at `[scripts/source_parse.py](scripts/source_parse.py)`.
 * The script does the vast majority of restoring the website, but I still had to go through each page and fix a few things by hand. 
 * Finally, I added some Jekyll configuration so that the site could be hosted on GitHub Pages. There's not much to the configuration, as I just want to it copy the existing pages and assets to the right place, and I'm certainly not wanting Jekyll to generate the HTML, as that would defeat the purpose of the exercise! 
-
-
