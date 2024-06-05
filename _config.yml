@@ -43,5 +43,7 @@ exclude:
    - README.md
    - source/
    - dest/
+   - source.zip
+   - dest.zip
 
     
