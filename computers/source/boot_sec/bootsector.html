@@ -169,16 +169,16 @@ etc., etc., .... </p>
 <p>The simplest type of antivirus bootsector is the sort that just says
 that it's there, so if any virus overwrites it, then you'll notice. This
 is usually simple stuff like flashing colours and a text message. There
-are 2 examples of this in my source code, one in ' <a href="boot.s">BOOT.S</a>
-' and the other in ' <a href="phnx_bt.s">PHNX_BT.S</a> '. I've also done
-an installer program for '<a href="phnx_bt.s">PHNX_BT.S</a> ', which allows
+are 2 examples of this in my source code, one in ' <a href="{{ "boot.s" | relative_urL }}">BOOT.S</a>
+' and the other in ' <a href="{{" phnx_bt.s" | relative_urL }}">PHNX_BT.S</a> '. I've also done
+an installer program for '<a href="{{ "phnx_bt.s" | relative_urL }}">PHNX_BT.S</a> ', which allows
 you to type in any message you want to display with the bootsector! Look
-in '<a href="installp.s">INSTALLP.S</a>'. </p>
+in '<a href="{{" installp.s" | relative_urL }}">INSTALLP.S</a>'. </p>
 <p>I might as well note here that there have been some stunning examples
 of this bootsector. For example, the <i>OVR full-o-boot, Fingerbobs sprites,
 Oberjee's rasters, Oberjee's starfield, DCK boot</i>. All of them done
 in less than 512 bytes! </p>
-<p>The bootsector in '<a href="phnx_bt.s">PHNX_BT.S</a>' also checks to
+<p>The bootsector in '<a href="{{ "phnx_bt.s" | relative_urL }}">PHNX_BT.S</a>' also checks to
 see in the reset vector has been changed, a possible pointer to a reset-proof
 virus. However, it is probably a bit more likely that any virus will be
 <i>reset-resident</i>, (eg <i>Ghost</i> virus) which uses a different technique
@@ -220,7 +220,7 @@ way a virus on the ST would operate. Don't worry- I'm not giving any exact
 details, so all you budding virus writers are going to be disappointed
 Anyway, you'd have to be pretty clever to outwit most decent virus killer
 programs these days. I have included code for the <i>English 'Antivirus'</i>
-for reference in '<a href="anti.s">ANTI.S</a>' </p>
+for reference in '<a href="{{ "anti.s" | relative_urL }}">ANTI.S</a>' </p>
 <p>
 </p><hr/><p></p>
 <p>When you think on it, a virus spreads in a pretty similar way to the
@@ -359,9 +359,9 @@ $4e4e</pre>
 so if we find one in the virus bootsector, then we can check further for
 the rest of the incriminating bytes. If so, we can flash 'red for suspicious'.
 This is not exactly foolproof, but it can detect most viruses. </p>
-<p>If you want to see how I did then you can load up ' <a href="agraboot.s">AGRABOOT.S</a>
+<p>If you want to see how I did then you can load up ' <a href="{{ "agraboot.s" | relative_urL }}">AGRABOOT.S</a>
 '. It's old code now, and I've improved it, but it's quite nice. There's
-also an installer program for it in ' <a href="installa.s">INSTALLA.S</a>'.
+also an installer program for it in ' <a href="{{ "installa.s" | relative_urL }}">INSTALLA.S</a>'.
 </p>
 <p>
 </p><hr/><p></p>
